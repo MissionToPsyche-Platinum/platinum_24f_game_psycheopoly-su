@@ -9,7 +9,7 @@ var slot_button_scene: PackedScene = null
 #@onready var grid := $Screen/InvPanel/CenterContainer/MarginContainer/GridContainer as GridContainer
 @onready var money_label: Label = %MoneyLabel
 @onready var progress: ProgressBar = %progress
-
+@onready var bg: ColorRect = $ColorRect
 @onready var sell_total_label: Label = $Screen/MarginContainer/VBoxContainer/BottomBar/HBoxContainer/Total
 @onready var sell_confirm_btn: BaseButton = $Screen/MarginContainer/VBoxContainer/BottomBar/HBoxContainer/ConfirmSell
 @onready var sell_cancel_btn: BaseButton = $Screen/MarginContainer/VBoxContainer/BottomBar/HBoxContainer/CancelSell
@@ -20,6 +20,12 @@ var slot_button_scene: PackedScene = null
 @onready var subfilter: OptionButton = $Screen/MarginContainer/VBoxContainer/TopBar/CenterContainer/VBoxContainer/HBoxContainer/OptionButton
 @onready var scroll_container: ScrollContainer = $Screen/MarginContainer/VBoxContainer/CenterContainer/ScrollContainer
 @onready var grid: GridContainer = $Screen/MarginContainer/VBoxContainer/CenterContainer/ScrollContainer/GridContainer
+@onready var panel_mover: Control = $Screen
+
+var panel_final_position: Vector2 = Vector2.ZERO
+var panel_start_position: Vector2 = Vector2.ZERO
+var is_opening_or_closing: bool = false
+var inventory_ready_for_animation: bool = false
 var current_category: int = ItemData.InventoryCategory.ITEM
 enum InventoryMode {
 	NORMAL,
@@ -37,8 +43,10 @@ var hovered_item: ItemData = null
 var current_subfilter: String = "All"
 var inventory_model: InventoryModel = null
 var columns: int = 1
+
 func _ready() -> void:
-	
+
+	visible = false	
 	slot_button_scene = load(SLOT_BUTTON_SCENE_PATH) as PackedScene
 	print("grid node",grid)
 	hide()
@@ -85,10 +93,71 @@ func _ready() -> void:
 	MoneySave.money_changed.connect(_update_money)
 	_update_category_label()
 	_populate_subfilter()
+	await get_tree().process_frame
+	await get_tree().process_frame
 
+	panel_final_position = Vector2.ZERO
 
+	var panel_height: float = get_viewport_rect().size.y
+	panel_start_position = Vector2(0.0, -panel_height - 40.0)
 
+	panel_mover.position = panel_start_position
+	if bg != null:
+		bg.modulate.a = 0.0
+	visible = false
+	inventory_ready_for_animation = true
+func toggle_inventory() -> void:
+	if is_opening_or_closing:
+		return
 
+	if visible:
+		await close_inventory()
+	else:
+		await open_inventory()
+func open_inventory() -> void:
+	if is_opening_or_closing:
+		return
+
+	is_opening_or_closing = true
+	visible = true
+
+	panel_mover.position = panel_start_position
+
+	if bg != null:
+		bg.modulate.a = 0.0
+
+	var tween := create_tween()
+	tween.set_parallel(true)
+
+	if bg != null:
+		tween.tween_property(bg, "modulate:a", 1.0, 0.2)
+
+	tween.tween_property(panel_mover, "position", panel_final_position, 0.28) \
+		.set_trans(Tween.TRANS_CUBIC) \
+		.set_ease(Tween.EASE_OUT)
+
+	await tween.finished
+	is_opening_or_closing = false
+func close_inventory() -> void:
+	if is_opening_or_closing:
+		return
+
+	is_opening_or_closing = true
+
+	var tween := create_tween()
+	tween.set_parallel(true)
+
+	if bg != null:
+		tween.tween_property(bg, "modulate:a", 0.0, 0.18)
+
+	tween.tween_property(panel_mover, "position", panel_start_position, 0.22) \
+		.set_trans(Tween.TRANS_CUBIC) \
+		.set_ease(Tween.EASE_IN)
+
+	await tween.finished
+
+	hide()
+	is_opening_or_closing = false
 func _slot_matches_current_filter(slot_data: Variant) -> bool:
 	if current_subfilter == "All":
 		return true
@@ -578,21 +647,21 @@ func _on_sell_confirm_pressed() -> void:
 func _on_sell_cancel_pressed() -> void:
 	var shop_ref = sell_target_shop
 	exit_sell_mode()
-	hide()
+
+	await close_inventory()
 
 	if shop_ref != null:
 		shop_ref.show()
-
 func _on_close_pressed() -> void:
 	hide_hover_tooltip()
 
 	if current_mode == InventoryMode.SELL:
 		var shop_ref = sell_target_shop
 		exit_sell_mode()
-		hide()
+		await close_inventory()
 
 		if shop_ref != null:
 			shop_ref.show()
 		return
 
-	hide()
+	await close_inventory()

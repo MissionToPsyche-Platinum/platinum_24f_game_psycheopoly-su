@@ -16,4 +16,8 @@ func _on_inv_btn_pressed() -> void:
 		return
 
 	inventory_overlay.set_inventory(player_inventory)
-	inventory_overlay.show()
+
+	if inventory_overlay.visible:
+		await inventory_overlay.close_inventory()
+	else:
+		await inventory_overlay.open_inventory()

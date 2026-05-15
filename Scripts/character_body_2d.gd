@@ -1,7 +1,7 @@
 extends CharacterBody2D
 class_name Player
 
-const MAX_BOARD_ITERATIONS: int = 15
+const MAX_BOARD_ITERATIONS: int = 1
 
 @export var Board: MainBoard
 @export var cell_size: Vector2i
@@ -16,7 +16,8 @@ const MAX_BOARD_ITERATIONS: int = 15
 @export var alien: PackedScene = preload("res://Scenes/Minigames/alien_communication/alien_communication.tscn")
 @export var reward_screen: PackedScene = preload("res://Scenes/reward_screen.tscn")
 @export var tutorial_scene: PackedScene = preload("res://Scenes/tutorial.tscn")
-
+@export var possible_part_items: Array[ItemData] = []
+const ITEM_DATABASE_PATH: String = "res://ItemDatabase_updated.json"
 var initialized: bool = false
 var rng := RandomNumberGenerator.new()
 var spaces_moved_total: int = 0
@@ -28,7 +29,7 @@ var turn: int = 0
 var minigames: Array[PackedScene] = []
 var ending_triggered: bool = false
 var active_offer: Control = null
-
+var shop_database: ItemDatabase
 func _ready() -> void:
 	if Board == null:
 		push_error("Player Board reference is missing.")
@@ -67,6 +68,199 @@ func _animate_to_tile(tile_index: int, duration: float = 0.2) -> void:
 	tween.tween_property(self, "global_position", destination, duration).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
 
 	await tween.finished
+func _open_chance_card() -> void:
+	busy = true
+	can_roll = false
+
+	var effects: Array[Dictionary] = [
+		{
+			"text": "You found a mysterious part!",
+			"type": "gain_part"
+		},
+		{
+			"text": "A part was stolen from you!",
+			"type": "lose_part"
+		},
+		{
+			"text": "You gained 10 coins!",
+			"type": "money",
+			"amount": 10
+		},
+		{
+			"text": "You lost 5 coins!",
+			"type": "money",
+			"amount": -5
+		}
+	]
+
+	var effect: Dictionary = effects[rng.randi_range(0, effects.size() - 1)]
+
+	await _show_chance_prompt(str(effect["text"]))
+	await _apply_chance_effect(effect)
+
+	can_roll = true
+	busy = false
+func _show_chance_prompt(message: String) -> void:
+	if offer_scene == null:
+		push_error("offer_scene is missing.")
+		return
+
+	if Board.overlay_root != null:
+		Board.overlay_root.visible = true
+
+	var prompt := offer_scene.instantiate()
+	Board.overlay_root.add_child(prompt)
+
+	if prompt.has_method("setup_prompt"):
+		prompt.setup_prompt(message, "OK", "Skip")
+	elif prompt.has_method("setup"):
+		prompt.setup("Chance Card")
+	else:
+		push_warning("Chance prompt scene does not have setup_prompt().")
+
+	await prompt.choice
+func _apply_chance_effect(effect: Dictionary) -> void:
+	var effect_type: String = str(effect["type"])
+
+	match effect_type:
+		"money":
+			var amount: int = int(effect["amount"])
+			MoneySave.add_money(amount)
+
+		"gain_part":
+			_gain_random_part()
+
+		"lose_part":
+			_lose_random_part()
+func _get_random_part_from_database() -> ItemData:
+	if not FileAccess.file_exists(ITEM_DATABASE_PATH):
+		push_warning("Item database not found: " + ITEM_DATABASE_PATH)
+		return null
+
+	var file := FileAccess.open(ITEM_DATABASE_PATH, FileAccess.READ)
+	var json_text: String = file.get_as_text()
+	file.close()
+
+	var parsed = JSON.parse_string(json_text)
+
+	if typeof(parsed) != TYPE_DICTIONARY:
+		push_warning("Item database JSON is not a Dictionary.")
+		return null
+
+	var items: Array = parsed.get("items", [])
+	var valid_parts: Array[Dictionary] = []
+
+	for item_data in items:
+		if typeof(item_data) != TYPE_DICTIONARY:
+			continue
+
+		# Your JSON uses Category "1" for parts.
+		if str(item_data.get("Category", "")) == "1":
+			valid_parts.append(item_data)
+
+	if valid_parts.is_empty():
+		return null
+
+	var chosen: Dictionary = valid_parts[rng.randi_range(0, valid_parts.size() - 1)]
+
+	var item := ItemData.new()
+
+	item.id = str(chosen.get("ID", ""))
+	item.display_name = str(chosen.get("Name", "Unknown Part"))
+	item.description = str(chosen.get("Description", ""))
+	item.buy_price = int(chosen.get("Price", "0"))
+	item.sell_price = int(chosen.get("Price", "0"))
+	item.max_stack = int(chosen.get("MaxStack", "1"))
+	item.category = ItemData.InventoryCategory.PART
+
+	var icon_path: String = str(chosen.get("Icon", ""))
+	if icon_path != "" and ResourceLoader.exists(icon_path):
+		item.icon = load(icon_path)
+
+	item.part_subfilter = int(chosen.get("PartSubfilter", "0"))
+
+	item.aerodynamics = float(chosen.get("Aerodynamics", "0"))
+	item.weight = float(chosen.get("Weight", "0"))
+	item.cost = float(chosen.get("Cost", "0"))
+	item.repairability = float(chosen.get("Repairability", "0"))
+	item.acceleration = float(chosen.get("Acceleration", "0"))
+
+	return item			
+func _gain_random_part() -> void:
+	var player_inventory: InventoryModel = $InventoryModel
+
+	if shop_database == null:
+		shop_database = ItemDatabase.new()
+		shop_database.load_items("")
+
+	var valid_parts: Array[ItemData] = []
+
+	for item_data in shop_database.get_all_items():
+		if item_data == null:
+			continue
+
+		if item_data.category == ItemData.InventoryCategory.PART:
+			valid_parts.append(item_data)
+
+	if valid_parts.is_empty():
+		push_warning("No valid part items found in ItemDatabase.")
+		return
+
+	var base_item: ItemData = valid_parts[rng.randi_range(0, valid_parts.size() - 1)]
+	var part_instance: PartInstance = RewardGen.make_random_part(base_item)
+
+	# 🔑 THIS is the important part
+	var range_info: Dictionary = player_inventory.get_category_slot_range(ItemData.InventoryCategory.PART)
+	var start: int = int(range_info["start"])
+	var count: int = int(range_info["count"])
+
+	var empty_index: int = -1
+
+	for i in range(start, start + count):
+		if player_inventory.get_slot(i) == null:
+			empty_index = i
+			break
+
+	if empty_index == -1:
+		push_warning("No empty PART slots available.")
+		return
+
+	player_inventory.set_slot(empty_index, {
+		"item": part_instance,
+		"item_data": base_item
+	})
+
+	print("Gained part in PART slot: ", empty_index)
+func _lose_random_part() -> void:
+	var player_inventory: InventoryModel = $InventoryModel
+
+	var range_info: Dictionary = player_inventory.get_category_slot_range(ItemData.InventoryCategory.PART)
+	var start: int = int(range_info["start"])
+	var count: int = int(range_info["count"])
+
+	var valid_slots: Array[int] = []
+
+	for i in range(start, start + count):
+		var slot = player_inventory.get_slot(i)
+
+		if slot == null:
+			continue
+
+		if not slot.has("item"):
+			continue
+
+		var part_instance: PartInstance = slot["item"] as PartInstance
+
+		if part_instance != null:
+			valid_slots.append(i)
+
+	if valid_slots.is_empty():
+		print("No parts to remove.")
+		return
+
+	var chosen_index: int = valid_slots[rng.randi_range(0, valid_slots.size() - 1)]
+
+	player_inventory.set_slot(chosen_index, null)
 
 func roll_and_move(amount: int = 0) -> void:
 	if not initialized:
@@ -115,6 +309,8 @@ func roll_and_move(amount: int = 0) -> void:
 		await _open_shop()
 	elif Board.is_red_tile(current_tile_index):
 		await _offer_game()
+	elif Board.is_chance_tile(current_tile_index):
+		await _open_chance_card()
 	else:
 		MoneySave.add_money(3)
 
@@ -321,4 +517,4 @@ func _trigger_credits_end() -> void:
 		child.queue_free()
 
 	if has_node("/root/Navigator"):
-		Navigator.call_deferred("go_to_scene_by_path", "res://Scenes/credits.tscn")
+		Navigator.call_deferred("go_to_scene_by_path", "res://Scenes/Credits/credits.tscn")
