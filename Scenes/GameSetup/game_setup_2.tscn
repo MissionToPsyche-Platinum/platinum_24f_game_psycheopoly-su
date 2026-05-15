@@ -6,9 +6,9 @@
 [ext_resource type="PackedScene" uid="uid://b6mprb2wjh47y" path="res://Scenes/GameSetup/player_card.tscn" id="3_vc0qs"]
 [ext_resource type="Texture2D" uid="uid://jsebyqnin6ak" path="res://Scenes/GameSetup/Images/TokenTray.png" id="4_1dmt7"]
 [ext_resource type="PackedScene" uid="uid://c8fpamm7fxfa5" path="res://Scenes/GameSetup/2DCoinView.tscn" id="5_okjav"]
+[ext_resource type="Texture2D" uid="uid://bqt6xsrnu8uu7" path="res://Scenes/GameSetup/Images/Start.svg" id="6_start"]
 
-[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_sn5x1"]
-load_path = "res://.godot/imported/Start.svg-b0adccf835b8a9acc77418af324066d0.ctex"
+
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_ypne3"]
 
@@ -162,7 +162,8 @@ size_flags_horizontal = 3
 
 [node name="TextureRect" type="TextureRect" parent="CanvasLayer/TopScene/MarginContainer/HBoxContainer/RightPanel" unique_id=1326013430]
 layout_mode = 2
-texture = SubResource("CompressedTexture2D_sn5x1")
+texture = ExtResource("6_start")
+
 
 [node name="Tutorial Button" type="Control" parent="CanvasLayer/TopScene/MarginContainer/HBoxContainer/RightPanel/TextureRect" unique_id=915214406]
 layout_mode = 1

@@ -2,6 +2,7 @@ extends Button
 
 @export var target_scene: PackedScene
 @export var target_scene_path: String
+@export var reset_game_on_press: bool = false
 
 var click_sound_player: AudioStreamPlayer
 
@@ -23,6 +24,13 @@ func _ready() -> void:
 	
 		
 func _on_press():
+	if reset_game_on_press:
+		var reset_owner := owner
+		if reset_owner != null and reset_owner.has_method("reset_for_new_game"):
+			reset_owner.reset_for_new_game()
+		else:
+			push_warning("Button '%s' was asked to reset the game, but its owner has no reset_for_new_game method." % self.name)
+
 	_play_click_sound()
 	
 	await get_tree().create_timer(click_sound_player.stream.get_length()).timeout

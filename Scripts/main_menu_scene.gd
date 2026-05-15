@@ -42,8 +42,49 @@ func _click_then_transition(load_scene: PackedScene):
 
 func _on_request_transition(load_scene: PackedScene) -> void:
 	await _click_then_transition(load_scene)
+
+func reset_for_new_game() -> void:
+	if has_node("/root/Navigator"):
+		var current_scene := get_tree().current_scene
+		for scene_node in Navigator.scenes_in_memory.values():
+			if is_instance_valid(scene_node) and scene_node != current_scene:
+				scene_node.queue_free()
+		Navigator.scenes_in_memory.clear()
+		Navigator.previous_scene_stack.clear()
+
+	if has_node("/root/playerPos"):
+		playerPos.savedPosition = Vector2.ZERO
+		playerPos.savedTurn = 0
+
+	if has_node("/root/CurGameState"):
+		CurGameState.total_difficulty_reduction = 0
+		CurGameState.total_time_bonus = 0
+		CurGameState.cbroot_stat = 0.0
+
+		if CurGameState.inventory != null:
+			CurGameState.inventory.clear()
+
+	if has_node("/root/MoneySave"):
+		MoneySave.money = 100
+
+	if has_node("/root/Settings"):
+		Settings.play_tutorial = true
+
+	if has_node("/root/GlobalSettings"):
+		GlobalSettings.number_of_players = 0
+		GlobalSettings.next_player_id = 0
+		GlobalSettings.players.clear()
+		GlobalSettings.active_players.clear()
+		GlobalSettings.used_buttons.clear()
+
+func _reset_main_board_memory_for_new_game() -> void:
+	reset_for_new_game()
+
+
 func _on_confirm_pressed() -> void:
 	if play_target_scene == null:
 		push_error("MainMenu: play_target_scene not set")
 		return
+
+	reset_for_new_game()
 	await _click_then_transition(play_target_scene)

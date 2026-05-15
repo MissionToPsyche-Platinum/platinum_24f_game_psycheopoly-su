@@ -241,6 +241,7 @@ layout_mode = 2
 texture_normal = ExtResource("2_oc7th")
 
 [node name="progresscontain" type="Control" parent="Screen/MarginContainer/VBoxContainer" unique_id=946735210]
+visible = false
 layout_mode = 2
 size_flags_horizontal = 4
 mouse_filter = 2

@@ -1,25 +1,22 @@
 extends Control
 
-@export var scroll_speed: float = 40.0
+@export var scroll_speed: float = 60.0
 
 @onready var vBoxContainer: VBoxContainer = $VBoxContainer
+@onready var lastElement: Control = $VBoxContainer.get_child(-1)
 
-@onready var lastElement = $VBoxContainer.get_child(-1)
+var credits_finished: bool = false
 
-func _ready():
+func _ready() -> void:
 	vBoxContainer.position.y = get_viewport_rect().size.y
 
-
-func _process(delta):
+func _process(delta: float) -> void:
 	vBoxContainer.position.y -= scroll_speed * delta
 
-	# Looparound code
-	#if vBoxContainer.position.y < -vBoxContainer.size.y:
-		#vBoxContainer.position.y = get_viewport_rect().size.y
+	if credits_finished:
+		return
 
-
-	# Temporarily use the position of the last element. The main container
-	# seems to be unreasonably expanding in size.
-	if (lastElement.global_position.y + lastElement.size.y + 50) < 0: 
-		OS.delay_msec(500)
+	if (lastElement.global_position.y + lastElement.size.y + 50) < 0:
+		credits_finished = true
+		await get_tree().create_timer(0.5).timeout
 		$Button.emit_signal("pressed")

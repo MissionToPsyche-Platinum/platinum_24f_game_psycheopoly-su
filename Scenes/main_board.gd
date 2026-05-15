@@ -12,6 +12,7 @@ signal branch_prompt_closed(chose_branch: bool, next_index: int)
 @export var tile_spacing_x: int = 24
 
 @export var min_special_spacing: int = 2
+@export var chance_tile_target: int=22
 @export var red_tile_target: int = 12
 @export var shop_tile_target: int = 6
 @export var event_tile_target: int = 10
@@ -38,6 +39,7 @@ var red_tile_indices: Array[int] = []
 var shop_tile_indices: Array[int] = []
 var event_tile_indices: Array[int] = []
 var treasure_tile_indices: Array[int] = []
+var chance_tile_indices: Array[int]=[]
 
 var start_tile_index: int = 0
 
@@ -166,10 +168,14 @@ func _generate_special_tiles() -> void:
 	_place_special_tiles(usable_indices, "treasure", treasure_tile_target)
 	usable_indices.shuffle()
 	_place_special_tiles(usable_indices, "shop", shop_tile_target)
+	usable_indices.shuffle()
+	_place_special_tiles(usable_indices,"chance",chance_tile_target)
+	
 	red_tile_indices.sort()
 	shop_tile_indices.sort()
 	event_tile_indices.sort()
 	treasure_tile_indices.sort()
+	chance_tile_indices.sort()
 
 func _place_special_tiles(usable_indices: Array[int], tile_type: String, target_count: int) -> void:
 	var placed_count: int = 0
@@ -182,6 +188,7 @@ func _place_special_tiles(usable_indices: Array[int], tile_type: String, target_
 				"shop": shop_tile_indices.append(idx)
 				"event": event_tile_indices.append(idx)
 				"treasure": treasure_tile_indices.append(idx)
+				"chance":chance_tile_indices.append(idx)
 			placed_count += 1
 
 func _can_place_special(index: int, tile_type: String) -> bool:
@@ -226,7 +233,8 @@ func get_start_center() -> Vector2:
 
 func is_shop_tile(index: int) -> bool:
 	return shop_tile_indices.has(index)
-
+func is_chance_tile(tile_index: int) -> bool:
+	return chance_tile_indices.has(tile_index)
 func is_red_tile(index: int) -> bool:
 	return red_tile_indices.has(index)
 
@@ -506,6 +514,8 @@ func _draw_tiles() -> void:
 			tile_color = Color(0.65, 0.35, 1.0)
 		elif treasure_tile_indices.has(i):
 			tile_color = Color(1.0, 0.85, 0.2)
+		elif chance_tile_indices.has(i):
+			tile_color= Color(0.7,0.6,0.9)
 		elif all_branch_indices.has(i):
 			tile_color = Color(0.35, 0.55, 0.75)
 		draw_rect(rect, tile_color, true)

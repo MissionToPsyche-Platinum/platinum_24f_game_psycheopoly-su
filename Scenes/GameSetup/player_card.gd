@@ -21,11 +21,15 @@ const CARDS_TO_COLORS = {
 	3: "res://Scenes/GameSetup/Images/PurplePlayerSelect.svg"
 }
 
-func _set_texture_rect_texture_from_image_path(image_path, target_texture_rect):
-	var target_image = Image.load_from_file(image_path)
-	var target_texture = ImageTexture.create_from_image(target_image)
-	
+func _set_texture_rect_texture_from_image_path(image_path: String, target_texture_rect: TextureRect) -> void:
+	var target_texture := load(image_path) as Texture2D
+
+	if target_texture == null:
+		push_error("PlayerCard: failed to load texture at " + image_path)
+		return
+
 	target_texture_rect.texture = target_texture
+
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:

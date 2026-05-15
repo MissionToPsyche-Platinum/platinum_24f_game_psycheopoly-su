@@ -13,7 +13,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_gryuy")
-scroll_speed = 300.0
+scroll_speed = 60.0
 
 [node name="TextureRect" type="TextureRect" parent="." unique_id=1384651065]
 layout_mode = 1
@@ -97,6 +97,6 @@ offset_top = -635.0
 offset_right = 102.0
 offset_bottom = -604.0
 grow_vertical = 0
-text = "⬅️ Back"
+text = "< Back"
 script = ExtResource("3_1bamb")
 target_scene_path = "res://Scenes/main_menu.tscn"
