@@ -2,15 +2,25 @@
 
 [ext_resource type="Script" uid="uid://c2ynb5poqt67g" path="res://Scenes/main_board.gd" id="1_6bsxh"]
 [ext_resource type="Script" uid="uid://t16dhillvlnl" path="res://Scripts/character_body_2d.gd" id="2_6bsxh"]
+[ext_resource type="Texture2D" uid="uid://caifxllmss2qn" path="res://Sources/Images/BoardTiles/forkSpacefix.png" id="2_fhpg6"]
+[ext_resource type="Texture2D" uid="uid://2fbr07o8fwjm" path="res://Sources/Images/BoardTiles/minigameSpaceFixed.png" id="3_gwpjv"]
 [ext_resource type="Texture2D" uid="uid://drfn575l1epwe" path="res://Sources/Images/SpacemanCharacter1.png" id="3_y7j1t"]
+[ext_resource type="Texture2D" uid="uid://cdj1ao8rbgijx" path="res://Sources/Images/BoardTiles/shopSpaceFix.png" id="4_sxgxj"]
 [ext_resource type="Script" uid="uid://bxp0ysip7hpsw" path="res://Scenes/hud_base.gd" id="4_u7eij"]
 [ext_resource type="Script" uid="uid://d017tj3jo7b21" path="res://Scripts/Inventory/InventoryMod.gd" id="4_wxlku"]
+[ext_resource type="Texture2D" uid="uid://b6vjj0nt5rs8g" path="res://Sources/Images/BoardTiles/chanceSpace3.png" id="5_fhpg6"]
 [ext_resource type="Texture2D" uid="uid://ca758bk7k5kol" path="res://Sources/Images/Player-Idle.png" id="5_njf4n"]
 [ext_resource type="Script" uid="uid://b5k67o2lop2t3" path="res://Scenes/roll.gd" id="6_m4kfr"]
 [ext_resource type="PackedScene" uid="uid://cxllthmye7w1s" path="res://Scenes/UI/Inventory.tscn" id="8_cvtiy"]
 
 [node name="MainBoard" type="Node2D" unique_id=1276912517]
 script = ExtResource("1_6bsxh")
+branch_tile_texture = ExtResource("2_fhpg6")
+red_tile_texture = ExtResource("3_gwpjv")
+shop_tile_texture = ExtResource("4_sxgxj")
+event_tile_texture = ExtResource("5_fhpg6")
+treasure_tile_texture = ExtResource("5_fhpg6")
+chance_tile_texture = ExtResource("5_fhpg6")
 
 [node name="CharacterBody2D" type="CharacterBody2D" parent="." unique_id=717135484 node_paths=PackedStringArray("Board")]
 script = ExtResource("2_6bsxh")
@@ -130,5 +140,28 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
+
+[node name="QuestBar" type="HBoxContainer" parent="GameOverlay" unique_id=339254253]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="Quest1" type="Label" parent="GameOverlay/QuestBar" unique_id=435761289]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+autowrap_mode = 3
+
+[node name="Quest2" type="Label" parent="GameOverlay/QuestBar" unique_id=835940217]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+autowrap_mode = 3
+
+[node name="Quest3" type="Label" parent="GameOverlay/QuestBar" unique_id=953178460]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+autowrap_mode = 3
 
 [connection signal="pressed" from="HUD/HUDBase/MarginContainer/HBoxContainer/HBoxContainer2/InvBtn" to="HUD/HUDBase" method="_on_inv_btn_pressed"]

@@ -12,6 +12,7 @@ func _ready():
 
 	# Load the click sound file
 	click_player.stream = load("res://Sources/Sounds/click.wav")
+	click_player.volume_db = -80.0
 
 	fade_rect.color.a=1.0
 	var tween := create_tween()

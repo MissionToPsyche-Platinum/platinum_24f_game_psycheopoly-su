@@ -2,10 +2,11 @@ extends Control
 
 signal closed
 
-const SLOT_BUTTON_SCENE_PATH := "res://Scenes/UI/SlotBtn.tscn"
+const SLOT_BUTTON_SCENE: PackedScene = preload("res://Scenes/UI/SlotBtn.tscn")
 const SHOP_SLOT_COUNT: int = 10
 
-var slot_button_scene: PackedScene = null
+static var _db_cache: ItemDatabase = null
+
 var shop_inventory: InventoryModel = null
 var shop_database: ItemDatabase = null
 
@@ -34,7 +35,6 @@ var selected_part_instance: PartInstance = null
 
 func _ready() -> void:
 	randomize()
-	slot_button_scene = load(SLOT_BUTTON_SCENE_PATH) as PackedScene
 
 	if close_btn != null:
 		close_btn.pressed.connect(_on_close_pressed)
@@ -78,8 +78,10 @@ func _create_shop_inventory() -> void:
 	shop_inventory.clear()
 
 func _create_database() -> void:
-	shop_database = ItemDatabase.new()
-	shop_database.load_items("")
+	if _db_cache == null:
+		_db_cache = ItemDatabase.new()
+		_db_cache.load_items("")
+	shop_database = _db_cache
 
 func _fill_random_stock() -> void:
 	if shop_inventory == null or shop_database == null:
@@ -116,8 +118,8 @@ func _rebuild_shop_grid() -> void:
 	if shop_grid == null:
 		push_error("Shop: ShopGrid not found")
 		return
-	if slot_button_scene == null:
-		push_error("Shop: slot_button_scene is null")
+	if SLOT_BUTTON_SCENE == null:
+		push_error("Shop: SLOT_BUTTON_SCENE is null")
 		return
 	if shop_inventory == null:
 		push_error("Shop: shop_inventory is null")
@@ -129,7 +131,7 @@ func _rebuild_shop_grid() -> void:
 	shop_grid.columns = columns
 
 	for i in range(SHOP_SLOT_COUNT):
-		var slot: SlotButton = slot_button_scene.instantiate() as SlotButton
+		var slot: SlotButton = SLOT_BUTTON_SCENE.instantiate() as SlotButton
 		if slot == null:
 			push_error("Shop: failed to instance SlotBtn")
 			return
@@ -161,9 +163,9 @@ func _on_shop_slot_selected(index: int, source_inventory: InventoryModel) -> voi
 
 	if selected_shop_index == index:
 		_clear_selection_display()
+		_update_sell_button_state()
 		_rebuild_shop_grid()
 		return
-
 	selected_shop_index = index
 	selected_index = index
 
@@ -181,6 +183,7 @@ func _on_shop_slot_selected(index: int, source_inventory: InventoryModel) -> voi
 
 	_update_selection_display()
 	_update_buy_total()
+	_update_sell_button_state()
 	_rebuild_shop_grid()
 
 func _on_shop_slot_hovered(index: int, source_inventory: InventoryModel) -> void:
@@ -228,7 +231,7 @@ func _show_item_details(item: ItemData, instance: PartInstance) -> void:
 		item_name_label.text = "%s [%s][%s]" % [
 			item.display_name,
 			instance.get_rarity_name(),
-			instance.get_category()
+			instance.get_display_name()
 		]
 
 		item_desc_label.text = "%s\n\nBuy: %d coins" % [
@@ -262,7 +265,7 @@ func _clear_selection_display() -> void:
 		item_price_label.text = ""
 	if buy_total_label != null:
 		buy_total_label.text = "Total Cost: $0 "
-
+	_update_sell_button_state()
 func _update_buy_total() -> void:
 	if buy_total_label == null:
 		return
@@ -273,6 +276,15 @@ func _update_buy_total() -> void:
 		buy_total_label.text = "Buy: %d coins" % selected_item.buy_price
 	else:
 		buy_total_label.text = "Buy: 0 coins"
+func _update_sell_button_state() -> void:
+	var has_shop_item_selected := selected_shop_index >= 0
+
+	if buy_btn != null:
+		buy_btn.disabled = not has_shop_item_selected
+
+
+	if sell_btn != null:
+		sell_btn.disabled = has_shop_item_selected
 func _on_buy_pressed() -> void:
 	if selected_shop_index < 0:
 		return
@@ -328,17 +340,22 @@ func _on_buy_pressed() -> void:
 	_rebuild_shop_grid()
 	_update_buy_total()
 func _on_sell_pressed() -> void:
-
+	if selected_shop_index >= 0:
+		return
 
 	if inventory_overlay == null or player_inventory == null:
 		push_error("Shop: inventory overlay or player inventory missing")
 		return
 
+	_clear_selection_display()
+
 	hide()
+
 	inventory_overlay.set_inventory(player_inventory)
-	inventory_overlay.show()
 	inventory_overlay.enter_sell_mode(self)
 
+	
+	await inventory_overlay.open_inventory()
 func _on_hire_pressed() -> void:
 	print("Hire pressed")
 

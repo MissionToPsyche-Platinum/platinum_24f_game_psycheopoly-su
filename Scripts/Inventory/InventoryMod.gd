@@ -259,3 +259,82 @@ func _check_for_ship_completion() -> void:
 
 	if has_node("/root/Navigator"):
 		Navigator.call_deferred("go_to_scene_by_path", "res://Scenes/credits.tscn")
+
+func get_total_stat(stat_name: String) -> float:
+	ensure_initialized()
+	var stat_map: Dictionary = {
+		"Aerodynamics": "aerodynamics",
+		"Weight": "weight",
+		"Cost": "cost",
+		"Repairability": "repairability",
+		"Acceleration": "acceleration",
+	}
+	var prop_name: String = stat_map.get(stat_name, "")
+	if prop_name == "":
+		return 0.0
+	var total: float = 0.0
+	for i in range(slots.size()):
+		var slot_data: Variant = slots[i]
+		if slot_data == null:
+			continue
+		var item = slot_data.get("item", null)
+		if item == null:
+			continue
+		var data: ItemData = null
+		if item is PartInstance:
+			data = item.item_data
+		elif item is ItemData:
+			data = item
+		if data == null:
+			continue
+		var raw = data.get(prop_name)
+		var qty: int = int(slot_data.get("qty", 1))
+		var stat_value: float = float(raw)
+		total += stat_value * qty
+	return total
+
+func get_count_by_subfilter(subfilter_value: int) -> int:
+	ensure_initialized()
+	var total: int = 0
+	for i in range(slots.size()):
+		var slot_data: Variant = slots[i]
+		if slot_data == null:
+			continue
+		var item = slot_data.get("item", null)
+		if item == null:
+			continue
+		var data: ItemData = null
+		if item is PartInstance:
+			data = item.item_data
+		elif item is ItemData:
+			data = item
+		if data == null:
+			continue
+		if data.part_subfilter == subfilter_value:
+			var qty: int = int(slot_data.get("qty", 1))
+			total += qty
+	return total
+
+func get_count_by_mission(mission_name: String) -> int:
+	ensure_initialized()
+	var total: int = 0
+	var target: String = mission_name.to_lower().strip_edges()
+	for i in range(slots.size()):
+		var slot_data: Variant = slots[i]
+		if slot_data == null:
+			continue
+		var item = slot_data.get("item", null)
+		if item == null:
+			continue
+		var data: ItemData = null
+		if item is PartInstance:
+			data = item.item_data
+		elif item is ItemData:
+			data = item
+		if data == null:
+			continue
+		var item_mission: String = data.mission.to_lower().strip_edges()
+		if item_mission == target:
+			var qty: int = int(slot_data.get("qty", 1))
+			total += qty
+	return total

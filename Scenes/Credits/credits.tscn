@@ -13,7 +13,6 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_gryuy")
-scroll_speed = 60.0
 
 [node name="TextureRect" type="TextureRect" parent="." unique_id=1384651065]
 layout_mode = 1
@@ -42,7 +41,7 @@ layout_mode = 2
 size_flags_vertical = 4
 bbcode_enabled = true
 text = "[center]Developers:[/center]
-[center]Aiden Bak | Seattle University[/center]
+[center]May Bak | Seattle University[/center]
 [center]Christian Buenafe | Seattle University[/center]
 [center]Avery Feingold | Seattle University[/center]
 [center]Max Tran | Seattle University[/center]

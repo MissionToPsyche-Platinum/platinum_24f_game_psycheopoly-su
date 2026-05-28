@@ -1,4 +1,4 @@
-[gd_scene format=3 uid="uid://duir3yx5h3hef"]
+[gd_scene format=3 uid="uid://dv4strt7hcmd5"]
 
 [ext_resource type="Script" uid="uid://c40ahof02jmh" path="res://Scripts/AsteroidTargetingScene.gd" id="1"]
 [ext_resource type="Texture2D" uid="uid://b760yqcfgp404" path="res://Sources/Images/AsteroidMinigame/BlackSpaceBackground2.png" id="2"]

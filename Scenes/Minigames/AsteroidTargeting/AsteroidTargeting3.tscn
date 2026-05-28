@@ -1,62 +1,56 @@
-[gd_scene format=3 uid="uid://bwd6gymm7msqn"]
+[gd_scene format=3 uid="uid://duir3yx5h3hef"]
 
-[ext_resource type="AudioStream" uid="uid://bg0sxfbbtqulw" path="res://Sources/Sounds/AsteroidMinigame/BackgroundMusic.ogg" id="1"]
+[ext_resource type="Script" uid="uid://c40ahof02jmh" path="res://Scripts/AsteroidTargetingScene.gd" id="1"]
 [ext_resource type="Texture2D" uid="uid://b760yqcfgp404" path="res://Sources/Images/AsteroidMinigame/BlackSpaceBackground2.png" id="2"]
-[ext_resource type="AudioStream" uid="uid://k5506rca1wus" path="res://Sources/Sounds/AsteroidMinigame/FailClick.wav" id="3"]
-[ext_resource type="Texture2D" uid="uid://dddsk24en77fo" path="res://Sources/Images/AsteroidMinigame/SuccessAsteroidMinigame.png" id="3_5as1p"]
-[ext_resource type="Texture2D" uid="uid://cf8ufdh4svodq" path="res://Sources/Images/PsycheAsteroid.png" id="4"]
-[ext_resource type="Script" uid="uid://4qfccl7cabti" path="res://Scripts/AsteroidTargeting.gd" id="5"]
-[ext_resource type="Texture2D" uid="uid://dlqomjqp1pluq" path="res://Sources/Images/Mars.png" id="6"]
-[ext_resource type="Texture2D" uid="uid://i42qvfhpmres" path="res://Sources/Images/Moon.png" id="7"]
-[ext_resource type="AudioStream" uid="uid://dgbff4kx04bpc" path="res://Sources/Sounds/AsteroidMinigame/ConfirmTarget.wav" id="8"]
-[ext_resource type="Script" uid="uid://c40ahof02jmh" path="res://Scripts/AsteroidTargetingScene.gd" id="9"]
+[ext_resource type="Texture2D" uid="uid://cf8ufdh4svodq" path="res://Sources/Images/PsycheAsteroid.png" id="3"]
+[ext_resource type="Texture2D" uid="uid://dddsk24en77fo" path="res://Sources/Images/AsteroidMinigame/SuccessAsteroidMinigame.png" id="3_j747q"]
+[ext_resource type="Texture2D" uid="uid://dlqomjqp1pluq" path="res://Sources/Images/Mars.png" id="4"]
+[ext_resource type="AudioStream" uid="uid://bg0sxfbbtqulw" path="res://Sources/Sounds/AsteroidMinigame/BackgroundMusic.ogg" id="5"]
+[ext_resource type="AudioStream" uid="uid://k5506rca1wus" path="res://Sources/Sounds/AsteroidMinigame/FailClick.wav" id="6"]
+[ext_resource type="AudioStream" uid="uid://dgbff4kx04bpc" path="res://Sources/Sounds/AsteroidMinigame/ConfirmTarget.wav" id="7"]
+[ext_resource type="Script" uid="uid://4qfccl7cabti" path="res://Scripts/AsteroidTargeting.gd" id="8"]
 
-[node name="AsteroidTargeting3" type="Node2D" unique_id=1430336985]
-script = ExtResource("9")
+[node name="AsteroidTargeting4" type="Node2D" unique_id=1046956802]
+script = ExtResource("1")
 
-[node name="Background" type="Sprite2D" parent="." unique_id=1893803277]
+[node name="Background" type="Sprite2D" parent="." unique_id=207312219]
 position = Vector2(576, 324)
 scale = Vector2(2, 2)
 texture = ExtResource("2")
 
-[node name="SuccessAsteroidMinigame" type="Sprite2D" parent="Background" unique_id=1951194598]
-position = Vector2(18, 627)
-texture = ExtResource("3_5as1p")
-
-[node name="SuccessAsteroidMinigame2" type="Sprite2D" parent="Background" unique_id=2069126956]
+[node name="SuccessAsteroidMinigame2" type="Sprite2D" parent="Background" unique_id=1503005202]
 position = Vector2(-271, 142.5)
-texture = ExtResource("3_5as1p")
+texture = ExtResource("3_j747q")
 
-[node name="SuccessAsteroidMinigame3" type="Sprite2D" parent="Background" unique_id=1447336001]
-position = Vector2(-249, 142.5)
-texture = ExtResource("3_5as1p")
+[node name="SuccessAsteroidMinigame3" type="Sprite2D" parent="Background" unique_id=1844018948]
+position = Vector2(-251, 143)
+texture = ExtResource("3_j747q")
 
-[node name="FailClick" type="AudioStreamPlayer" parent="." unique_id=1993472223]
-stream = ExtResource("3")
+[node name="SuccessAsteroidMinigame4" type="Sprite2D" parent="Background" unique_id=1268898289]
+position = Vector2(-230, 143)
+texture = ExtResource("3_j747q")
 
-[node name="Music" type="AudioStreamPlayer" parent="." unique_id=1330329220]
-stream = ExtResource("1")
+[node name="FailClick" type="AudioStreamPlayer" parent="." unique_id=998873188]
+stream = ExtResource("6")
+
+[node name="Music" type="AudioStreamPlayer" parent="." unique_id=1290049318]
+stream = ExtResource("5")
 parameters/looping = true
 
-[node name="PsycheAsteroid" type="Sprite2D" parent="." unique_id=1781545174]
-position = Vector2(900, 200)
-scale = Vector2(0.07, 0.07)
-texture = ExtResource("4")
-script = ExtResource("5")
-next_scene_path = "res://Scenes/Minigames/AsteroidTargeting/AsteroidTargeting4.tscn"
+[node name="PsycheAsteroid" type="Sprite2D" parent="." unique_id=1999859177]
+position = Vector2(786, 222)
+scale = Vector2(0.112, 0.134)
+texture = ExtResource("3")
+script = ExtResource("8")
+move_speed = 350.0
+next_scene_path = "res://Scenes/Minigames/AsteroidTargeting/AsteroidTargeting5.tscn"
 is_success_object = true
 
-[node name="ConfirmSound" type="AudioStreamPlayer" parent="PsycheAsteroid" unique_id=229250489]
-stream = ExtResource("8")
+[node name="ConfirmSound" type="AudioStreamPlayer" parent="PsycheAsteroid" unique_id=1633780359]
+stream = ExtResource("7")
 
-[node name="Mars" type="Sprite2D" parent="." unique_id=1949690385]
-position = Vector2(250, 150)
-scale = Vector2(0.12, 0.12)
-texture = ExtResource("6")
-script = ExtResource("5")
-
-[node name="Moon" type="Sprite2D" parent="." unique_id=1076415579]
-position = Vector2(500, 400)
-scale = Vector2(0.18, 0.18)
-texture = ExtResource("7")
-script = ExtResource("5")
+[node name="Mars" type="Sprite2D" parent="." unique_id=1576098477]
+position = Vector2(485, 388)
+scale = Vector2(0.158, 0.169)
+texture = ExtResource("4")
+script = ExtResource("8")

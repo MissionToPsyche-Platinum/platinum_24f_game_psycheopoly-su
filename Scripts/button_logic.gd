@@ -19,6 +19,7 @@ func _ready() -> void:
 	if click_sound_player == null:
 		click_sound_player = AudioStreamPlayer.new()
 		click_sound_player.stream = load("res://Sources/Sounds/Click.wav")
+		click_sound_player.volume_db = -80.0
 		add_child(click_sound_player)
 		
 	

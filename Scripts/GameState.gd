@@ -10,6 +10,13 @@ var cbroot_stat: float = 0.0
 func _ready() -> void:
 	add_child(inventory)
 	MoneySave.add_money(100)
+	QuestManager.set_inventory(inventory)
+	print("[GameState] inventory instance_id: ", inventory.get_instance_id())
+	QuestManager.generate_quest(1)
+	QuestManager.generate_quest(2)
+	QuestManager.generate_quest(3)
+	inventory.changed.connect(QuestManager.check_all)
+	QuestManager.quest_completed.connect(_on_quest_completed)
 
 func _update_stats():
 	if inventory == null:
@@ -34,3 +41,7 @@ func _update_stats():
 		cbroot_stat += pow(item.speed, 3) + pow(item.durability, 3) + pow(item.efficiency, 3)
 
 	cbroot_stat = pow(cbroot_stat, 1/3)
+
+func _on_quest_completed(quest_number: int) -> void:
+	var q := QuestManager.get_quest(quest_number)
+	print("Quest %d complete: %s" % [quest_number, q.title])

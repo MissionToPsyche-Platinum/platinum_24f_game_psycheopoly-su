@@ -194,7 +194,7 @@ func build_trie(word_file: String) -> Trie:
 
 	var file: FileAccess = FileAccess.open(word_file, FileAccess.READ)
 	if file == null:
-		push_error("Could not open alien word file: " + word_file)
+		push_error("Could not open word file (error %d): %s" % [FileAccess.get_open_error(), word_file])
 
 		for fallback_word in ["STAR", "MARS", "MOON", "ROVER", "SOLAR", "SPACE", "ALIEN", "ORBIT"]:
 			built_trie.insert(str(fallback_word))

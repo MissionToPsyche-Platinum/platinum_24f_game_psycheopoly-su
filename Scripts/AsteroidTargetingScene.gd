@@ -5,10 +5,31 @@ signal done(result: Dictionary)
 
 const INSTRUCTION_TEXT := "Click on the moving asteroid to advance"
 const INSTRUCTION_DURATION := 3.0
+const CHECKMARK_START_POSITION := Vector2(24, 610)
+const CHECKMARK_SPACING := 24.0
+const CHECKMARK_SCALE := Vector2.ONE
 
 func _ready() -> void:
+	_standardize_checkmarks()
 	if show_instruction_popup:
 		_show_instruction_popup()
+
+func _standardize_checkmarks() -> void:
+	var checkmarks := find_children("SuccessAsteroidMinigame*", "Sprite2D", true, false)
+	var visible_index := 0
+	for checkmark_node in checkmarks:
+		var checkmark := checkmark_node as Sprite2D
+		if checkmark == null:
+			continue
+		if not get_viewport_rect().has_point(checkmark.global_position):
+			checkmark.visible = false
+			continue
+		if checkmark.get_parent() != self:
+			checkmark.reparent(self, false)
+		checkmark.position = CHECKMARK_START_POSITION + Vector2(CHECKMARK_SPACING * visible_index, 0)
+		checkmark.scale = CHECKMARK_SCALE
+		checkmark.z_index = 10
+		visible_index += 1
 
 func _show_instruction_popup() -> void:
 	var canvas := CanvasLayer.new()

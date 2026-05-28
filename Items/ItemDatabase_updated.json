@@ -75,7 +75,7 @@
 	{
 	  "ID": "4",
 	  "Name": "Gamma Ray Spectrometer",
-	  "Icon": "res://Sources/Images/ItemImages/Gamma_Ray_Spectrometer.gif",
+	  "Icon": "res://Sources/Images/ItemImages/Gamma_Ray_Spectrometer.jpg",
 	  "Mission": "Lunar Prospector",
 	  "Price": "10",
 	  "MaxStack": "10",
@@ -93,7 +93,7 @@
 	{
 	  "ID": "5",
 	  "Name": "Neutron Spectrometer",
-	  "Icon": "res://Sources/Images/ItemImages/Neutron_Spectrometer.gif",
+	  "Icon": "res://Sources/Images/ItemImages/Neutron_Spectrometer.jpg",
 	  "Mission": "Lunar Prospector",
 	  "Price": "10",
 	  "MaxStack": "10",

@@ -26,7 +26,7 @@ var panel_final_position: Vector2 = Vector2.ZERO
 var panel_start_position: Vector2 = Vector2.ZERO
 var is_opening_or_closing: bool = false
 var inventory_ready_for_animation: bool = false
-var current_category: int = ItemData.InventoryCategory.ITEM
+var current_category: int = ItemData.InventoryCategory.PART
 enum InventoryMode {
 	NORMAL,
 	SELL
@@ -50,14 +50,19 @@ func _ready() -> void:
 	slot_button_scene = load(SLOT_BUTTON_SCENE_PATH) as PackedScene
 	print("grid node",grid)
 	hide()
-	if items_btn != null:
-		items_btn.pressed.connect(_on_items_pressed)
+	current_category = ItemData.InventoryCategory.PART
 
-	if parts_btn != null:
-		parts_btn.pressed.connect(_on_parts_pressed)
+	if items_btn != null:
+		items_btn.hide()
+		items_btn.disabled = true
 
 	if members_btn != null:
-		members_btn.pressed.connect(_on_members_pressed)
+		members_btn.hide()
+		members_btn.disabled = true
+
+	if parts_btn != null:
+		parts_btn.hide()
+		parts_btn.disabled = true
 	if money_label == null:
 		push_error("InventoryOverlay: MoneyLabel path is wrong or node is missing.")
 		return
@@ -117,6 +122,14 @@ func toggle_inventory() -> void:
 func open_inventory() -> void:
 	if is_opening_or_closing:
 		return
+
+	current_category = ItemData.InventoryCategory.PART
+	current_subfilter = "All"
+	selected_index = -1
+
+	_update_category_label()
+	_populate_subfilter()
+	_rebuild_grid()
 
 	is_opening_or_closing = true
 	visible = true
@@ -312,44 +325,20 @@ func _populate_subfilter() -> void:
 
 	subfilter.clear()
 
-	match current_category:
-		ItemData.InventoryCategory.ITEM:
-			subfilter.add_item("All")
-			subfilter.add_item("Iron")
-			subfilter.add_item("Steel")
-			subfilter.add_item("Carbon Fiber")
-			subfilter.add_item("Copper")
-			subfilter.add_item("Silicone")
-			subfilter.add_item("Water")
-
-		ItemData.InventoryCategory.PART:
-			subfilter.add_item("All")
-			subfilter.add_item("Engine")
-			subfilter.add_item("Engine Housing")
-			subfilter.add_item("Wing")
-			subfilter.add_item("Fuel Tank")
-			subfilter.add_item("Nose Cone")
-			subfilter.add_item("Body Panels")
-			subfilter.add_item("Electrical Components")
-		ItemData.InventoryCategory.MEMBER:
-			subfilter.add_item("All")
-			subfilter.add_item("Support")
-			subfilter.add_item("Economy")
-			subfilter.add_item("Buff")
-			subfilter.add_item("Luck")
+	subfilter.add_item("All")
+	subfilter.add_item("Engine")
+	subfilter.add_item("Engine Housing")
+	subfilter.add_item("Wing")
+	subfilter.add_item("Fuel Tank")
+	subfilter.add_item("Nose Cone")
+	subfilter.add_item("Body Panels")
+	subfilter.add_item("Electrical Components")
 
 	subfilter.select(0)
 	current_subfilter = "All"
 func _update_category_label() -> void:
-	match current_category:
-		ItemData.InventoryCategory.ITEM:
-			category_label.text = "Items"
-
-		ItemData.InventoryCategory.PART:
-			category_label.text = "Parts"
-
-		ItemData.InventoryCategory.MEMBER:
-			category_label.text = "Members"
+	if category_label != null:
+		category_label.text = "Parts"
 func _on_items_pressed() -> void:
 	current_category = ItemData.InventoryCategory.ITEM
 	_update_category_label()

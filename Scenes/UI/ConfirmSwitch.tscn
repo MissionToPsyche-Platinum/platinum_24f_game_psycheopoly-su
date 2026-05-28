@@ -1,6 +1,8 @@
 [gd_scene format=3 uid="uid://cu2rwo8sq2yw"]
 
 [ext_resource type="Script" uid="uid://6yt6b20ucnf1" path="res://Scenes/UI/confirm_switch.gd" id="1_m27pt"]
+[ext_resource type="Texture2D" uid="uid://c6snwdh8irybb" path="res://Sources/Images/UI/ConfirmButton.png" id="2_g38fx"]
+[ext_resource type="Texture2D" uid="uid://b564aaw8ri5kn" path="res://Sources/Images/UI/CancelButton.png" id="3_hiofy"]
 
 [node name="ConfirmSwitch" type="Control" unique_id=1919206113]
 layout_mode = 3
@@ -54,18 +56,24 @@ layout_mode = 2
 
 [node name="Title" type="Label" parent="Center/Control/Panel/MarginContainer/VBoxContainer" unique_id=954113005]
 layout_mode = 2
+size_flags_vertical = 3
 text = "Do you want to play this minigame?
 "
 
 [node name="HBoxContainer" type="HBoxContainer" parent="Center/Control/Panel/MarginContainer/VBoxContainer" unique_id=349338076]
 layout_mode = 2
+size_flags_vertical = 3
 
-[node name="Play" type="Button" parent="Center/Control/Panel/MarginContainer/VBoxContainer/HBoxContainer" unique_id=1549218224]
+[node name="Play" type="TextureButton" parent="Center/Control/Panel/MarginContainer/VBoxContainer/HBoxContainer" unique_id=599266526]
 custom_minimum_size = Vector2(80, 50)
 layout_mode = 2
-text = "Play"
+size_flags_horizontal = 3
+texture_normal = ExtResource("2_g38fx")
+stretch_mode = 6
 
-[node name="Skip" type="Button" parent="Center/Control/Panel/MarginContainer/VBoxContainer/HBoxContainer" unique_id=1747882715]
+[node name="Skip" type="TextureButton" parent="Center/Control/Panel/MarginContainer/VBoxContainer/HBoxContainer" unique_id=536366222]
 custom_minimum_size = Vector2(80, 50)
 layout_mode = 2
-text = "Skip"
+size_flags_horizontal = 3
+texture_normal = ExtResource("3_hiofy")
+stretch_mode = 6

@@ -1,6 +1,10 @@
 [gd_scene format=3 uid="uid://e4ar7ey68mj7"]
 
 [ext_resource type="Script" uid="uid://cnqnt2dpdsbrq" path="res://Scenes/UI/shopscreen.gd" id="1_rsstx"]
+[ext_resource type="Texture2D" uid="uid://dr1pdtfp6fsc8" path="res://Sources/Images/UI/CloseButton.png" id="2_4443e"]
+[ext_resource type="Texture2D" uid="uid://bribgw1vmtj16" path="res://Sources/Images/UI/SellButton.png" id="2_mvspl"]
+[ext_resource type="Texture2D" uid="uid://dus06itjwfxeb" path="res://Sources/Images/UI/No.png" id="3_4443e"]
+[ext_resource type="Texture2D" uid="uid://c6snwdh8irybb" path="res://Sources/Images/UI/ConfirmButton.png" id="3_x81sj"]
 
 [node name="Shops" type="Control" unique_id=71113960]
 layout_mode = 3
@@ -78,18 +82,19 @@ size_flags_horizontal = 4
 text = "Welcome to the Shop!"
 horizontal_alignment = 1
 
-[node name="Close" type="Button" parent="Control/Panel/Root/MarginContainer/NavBar" unique_id=403704318]
+[node name="Close" type="TextureButton" parent="Control/Panel/Root/MarginContainer/NavBar" unique_id=393740268]
 custom_minimum_size = Vector2(50, 30)
 layout_mode = 1
 anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
 offset_left = -54.0
+offset_right = 7.0
 offset_bottom = 31.0
 grow_horizontal = 0
 size_flags_horizontal = 4
 size_flags_vertical = 4
-text = "Close "
+texture_normal = ExtResource("2_4443e")
 
 [node name="MainShopCont" type="VBoxContainer" parent="Control/Panel/Root/MarginContainer" unique_id=1594070887]
 layout_mode = 2
@@ -130,17 +135,30 @@ layout_mode = 0
 offset_right = 410.0
 offset_bottom = 304.0
 
+[node name="Control2" type="Control" parent="Control/Panel/Root/MarginContainer/MainShopCont/ShopInfo/HBoxContainer" unique_id=1816904252]
+custom_minimum_size = Vector2(220, 60)
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+
 [node name="ItemPrice" type="Label" parent="Control/Panel/Root/MarginContainer/MainShopCont/ShopInfo/HBoxContainer" unique_id=1792177929]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="VBoxContainer" type="VBoxContainer" parent="Control/Panel/Root/MarginContainer/MainShopCont/ShopInfo/HBoxContainer" unique_id=738256115]
 layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
 
 [node name="ItemLabel" type="Label" parent="Control/Panel/Root/MarginContainer/MainShopCont/ShopInfo/HBoxContainer/VBoxContainer" unique_id=1868320502]
 unique_name_in_owner = true
 layout_mode = 2
+size_flags_vertical = 3
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="ItemDesc" type="RichTextLabel" parent="Control/Panel/Root/MarginContainer/MainShopCont/ShopInfo/HBoxContainer/VBoxContainer" unique_id=73999118]
 unique_name_in_owner = true
@@ -148,22 +166,38 @@ custom_minimum_size = Vector2(400, 250)
 layout_mode = 2
 size_flags_vertical = 3
 scroll_active = false
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Control" type="Control" parent="Control/Panel/Root/MarginContainer/MainShopCont/ShopInfo/HBoxContainer" unique_id=108854858]
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
 
 [node name="ShopBtns" type="HBoxContainer" parent="Control/Panel/Root/MarginContainer/MainShopCont" unique_id=1986213326]
 custom_minimum_size = Vector2(80, 80)
 layout_mode = 2
 
-[node name="SellBtn" type="Button" parent="Control/Panel/Root/MarginContainer/MainShopCont/ShopBtns" unique_id=1180415485]
-custom_minimum_size = Vector2(100, 100)
+[node name="Control" type="Control" parent="Control/Panel/Root/MarginContainer/MainShopCont/ShopBtns" unique_id=551965373]
 layout_mode = 2
-text = "Sell"
+size_flags_horizontal = 3
+mouse_filter = 2
 
-[node name="BuyBtn" type="Button" parent="Control/Panel/Root/MarginContainer/MainShopCont/ShopBtns" unique_id=1195642491]
-custom_minimum_size = Vector2(100, 100)
+[node name="SellBtn" type="TextureButton" parent="Control/Panel/Root/MarginContainer/MainShopCont/ShopBtns" unique_id=1026792433]
 layout_mode = 2
-text = "Buy"
+size_flags_horizontal = 4
+size_flags_vertical = 4
+texture_normal = ExtResource("2_mvspl")
+texture_disabled = ExtResource("3_4443e")
 
-[node name="HireBtn" type="Button" parent="Control/Panel/Root/MarginContainer/MainShopCont/ShopBtns" unique_id=1269264187]
-custom_minimum_size = Vector2(100, 100)
+[node name="BuyBtn" type="TextureButton" parent="Control/Panel/Root/MarginContainer/MainShopCont/ShopBtns" unique_id=129552178]
 layout_mode = 2
-text = "Hire"
+size_flags_horizontal = 4
+size_flags_vertical = 4
+texture_normal = ExtResource("3_x81sj")
+texture_disabled = ExtResource("3_4443e")
+
+[node name="Control2" type="Control" parent="Control/Panel/Root/MarginContainer/MainShopCont/ShopBtns" unique_id=1701471238]
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2

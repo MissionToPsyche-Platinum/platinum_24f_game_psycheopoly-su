@@ -1,11 +1,12 @@
 extends Control
 signal choice(play: bool)
 
+@onready var button_row: HBoxContainer = $Center/Control/Panel/MarginContainer/VBoxContainer/HBoxContainer
 @export var title_text: String = "Do you want to play this minigame?"
 @export var play_text: String = "Play"
 @export var skip_text: String = "Skip"
-@onready var play_btn: Button = $Center/Control/Panel/MarginContainer/VBoxContainer/HBoxContainer/Play
-@onready var skip_btn: Button = $Center/Control/Panel/MarginContainer/VBoxContainer/HBoxContainer/Skip
+@onready var play_btn: TextureButton = $Center/Control/Panel/MarginContainer/VBoxContainer/HBoxContainer/Play
+@onready var skip_btn: TextureButton = $Center/Control/Panel/MarginContainer/VBoxContainer/HBoxContainer/Skip
 @onready var blur: ColorRect = $BG
 @onready var panel_mover: Control = $Center/Control
 @onready var title_label: Label = $Center/Control/Panel/MarginContainer/VBoxContainer/Title
@@ -16,7 +17,7 @@ const MINIGAME_NAMES: Dictionary = {
 }
 
 @onready var center: CenterContainer = get_node_or_null("Center") as CenterContainer
-
+var one_button_mode: bool = false
 var panel_final_position: Vector2 = Vector2.ZERO
 var panel_start_position: Vector2 = Vector2.ZERO
 var is_closing: bool = false
@@ -32,19 +33,52 @@ func setup_prompt(new_title: String, new_play_text: String, new_skip_text: Strin
 	play_text = new_play_text
 	skip_text = new_skip_text
 
-	var title_label := _find_title_label()
 	if title_label != null:
 		title_label.text = title_text
 		title_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 
-	var p_btn := _find_button("Play")
-	if p_btn != null:
-		p_btn.text = play_text
+	if play_btn != null:
+		play_btn.visible = true
+		play_btn.disabled = false
+		play_btn.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 
-	var s_btn := _find_button("Skip")
-	if s_btn != null:
-		s_btn.text = skip_text
+	if skip_btn != null:
+		skip_btn.visible = true
+		skip_btn.disabled = false
+		skip_btn.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+func setup_check_prompt(new_title: String) -> void:
+	title_text = new_title
 
+	if title_label != null:
+		title_label.text = title_text
+		title_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+
+	if play_btn != null:
+		play_btn.visible = true
+		play_btn.disabled = false
+		play_btn.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+
+	if skip_btn != null:
+		skip_btn.visible = false
+		skip_btn.disabled = true
+
+func _apply_prompt_layout() -> void:
+	if title_label != null:
+		title_label.text = title_text
+		title_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+
+	if button_row != null:
+		button_row.alignment = BoxContainer.ALIGNMENT_CENTER
+
+	if play_btn != null:
+		play_btn.visible = true
+		play_btn.disabled = false
+		play_btn.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+
+	if skip_btn != null:
+		skip_btn.visible = not one_button_mode
+		skip_btn.disabled = one_button_mode
+		skip_btn.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 func _ready() -> void:
 	var viewport_size: Vector2 = get_viewport_rect().size
 
@@ -64,8 +98,7 @@ func _ready() -> void:
 	if panel_mover == null:
 		panel_mover = center
 
-	setup_prompt(title_text, play_text, skip_text)
-
+	_apply_prompt_layout()
 	if play_btn != null and not play_btn.pressed.is_connected(_on_play_pressed):
 		play_btn.pressed.connect(_on_play_pressed)
 

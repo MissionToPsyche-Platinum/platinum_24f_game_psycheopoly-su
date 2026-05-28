@@ -30,6 +30,7 @@ MoneySave="*uid://co0jfodd27uxj"
 PauseMenu="*uid://b7wnjbm0o6fjj"
 playerPos="*uid://c0pxd6kv02tid"
 CurGameState="*uid://chymtq8s0hi28"
+QuestManager="*uid://bo3cysswmv8iq"
 
 [display]
 

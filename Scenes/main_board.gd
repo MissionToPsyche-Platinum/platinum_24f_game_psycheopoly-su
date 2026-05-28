@@ -20,6 +20,13 @@ signal branch_prompt_closed(chose_branch: bool, next_index: int)
 @export var min_shop_spacing: int = 12
 @export var min_shop_distance_from_start: int = 15
 
+@export var branch_tile_texture: Texture2D
+@export var red_tile_texture: Texture2D
+@export var shop_tile_texture: Texture2D
+@export var event_tile_texture: Texture2D
+@export var treasure_tile_texture: Texture2D
+@export var chance_tile_texture: Texture2D
+
 @export var branches_enabled: bool = true
 @export var branch_count: int = 3
 @export var min_branch_start_distance: int = 25
@@ -31,6 +38,7 @@ signal branch_prompt_closed(chose_branch: bool, next_index: int)
 
 @onready var overlay_root: Control = get_node_or_null("Overlay/OverlayRoot") as Control
 @onready var game_root: Control = $GameOverlay/GameRoot
+@onready var quest_bar: HBoxContainer = $GameOverlay/QuestBar as HBoxContainer
 
 var rng := RandomNumberGenerator.new()
 
@@ -58,6 +66,39 @@ var _active_prompt_root_index: int = -1
 func _ready() -> void:
 	rng.randomize()
 	_setup_board_delayed()
+	if quest_bar != null:
+		quest_bar.anchor_left = 0.0
+		quest_bar.anchor_right = 1.0
+		quest_bar.anchor_top = 1.0
+		quest_bar.anchor_bottom = 1.0
+		quest_bar.offset_left = 10.0
+		quest_bar.offset_right = -10.0
+		quest_bar.offset_top = -160.0
+		quest_bar.offset_bottom = -10.0
+		quest_bar.add_theme_constant_override("separation", 16)
+	_refresh_quest_display()
+
+func _refresh_quest_display() -> void:
+	if quest_bar == null:
+		return
+	QuestManager.check_all()
+	var labels: Array = quest_bar.get_children()
+	for i in range(3):
+		if i >= labels.size():
+			break
+		var label: Label = labels[i] as Label
+		if label == null:
+			continue
+		var q: Quest = QuestManager.get_quest(i + 1)
+		if q == null:
+			label.text = "Quest %d: not yet generated" % (i + 1)
+		else:
+			var status: String = "COMPLETE" if q.is_complete else "incomplete"
+			label.text = "Quest %d — %s\n%s\n[%s]" % [i + 1, q.title, q.description, status]
+
+func set_quest_bar_visible(v: bool) -> void:
+	if quest_bar != null:
+		quest_bar.visible = v
 
 func _setup_board_delayed() -> void:
 	await get_tree().process_frame
@@ -162,10 +203,10 @@ func _generate_special_tiles() -> void:
 		usable_indices.append(i)
 	usable_indices.shuffle()
 	_place_special_tiles(usable_indices, "red", red_tile_target)
-	usable_indices.shuffle()
-	_place_special_tiles(usable_indices, "event", event_tile_target)
-	usable_indices.shuffle()
-	_place_special_tiles(usable_indices, "treasure", treasure_tile_target)
+	#usable_indices.shuffle()
+	#_place_special_tiles(usable_indices, "event", event_tile_target)
+	#usable_indices.shuffle()
+	#_place_special_tiles(usable_indices, "treasure", treasure_tile_target)
 	usable_indices.shuffle()
 	_place_special_tiles(usable_indices, "shop", shop_tile_target)
 	usable_indices.shuffle()
@@ -475,11 +516,21 @@ func move_index_by_steps(current_index: int, steps: int) -> int:
 	return index
 
 func _draw() -> void:
-	if tile_positions.is_empty():
-		return
 	_draw_path_lines()
 	_draw_tiles()
+func _draw_tile_texture(texture: Texture2D, rect: Rect2) -> void:
+	var img := texture.get_image()
+	var used_rect := img.get_used_rect()
 
+	if used_rect.size.x <= 0 or used_rect.size.y <= 0:
+		draw_texture_rect(texture, rect, true)
+		return
+
+	var source_rect := Rect2(used_rect.position, used_rect.size)
+
+	var draw_rect := rect.grow(-2)
+
+	draw_texture_rect_region(texture, draw_rect, source_rect)
 func _draw_path_lines() -> void:
 	for i in range(tile_count - 1):
 		draw_line(get_tile_center(i), get_tile_center(i + 1), Color(0.85, 0.85, 0.85), 6.0)
@@ -494,29 +545,50 @@ func _draw_path_lines() -> void:
 			draw_line(get_tile_center(int(tiles[b])), get_tile_center(int(tiles[b + 1])), Color(0.85, 0.85, 0.85), 6.0)
 		if rejoin_index >= 0:
 			draw_line(get_tile_center(int(tiles[tiles.size() - 1])), get_tile_center(rejoin_index), Color(0.85, 0.85, 0.85), 6.0)
+func _draw_texture_tile(texture: Texture2D, rect: Rect2) -> void:
+	var img := texture.get_image()
 
+	# This crops out transparent padding from the PNG.
+	var used := img.get_used_rect()
+
+	if used.size.x <= 0 or used.size.y <= 0:
+		return
+
+	var src := Rect2(used.position, used.size)
+
+	# Draw slightly inside the square so it does not cover the border.
+	var dst := rect.grow(-2)
+
+	draw_texture_rect_region(texture, dst, src)
 func _draw_tiles() -> void:
 	for i in range(tile_positions.size()):
 		var pos: Vector2 = tile_positions[i]
 		var rect := Rect2(pos, Vector2(cell_size))
+
 		var tile_color := Color(0.45, 0.45, 0.45)
+		var texture: Texture2D = null
+
 		if i == start_tile_index:
 			tile_color = Color(0.2, 0.85, 0.2)
-		elif branch_roots.has(i):
-			tile_color = Color(1.0, 0.75, 0.15)
 		elif branch_rejoins.has(i):
 			tile_color = Color(1.0, 0.75, 0.15)
-		elif red_tile_indices.has(i):
-			tile_color = Color(0.9, 0.2, 0.2)
-		elif shop_tile_indices.has(i):
-			tile_color = Color(0.2, 0.65, 1.0)
-		elif event_tile_indices.has(i):
-			tile_color = Color(0.65, 0.35, 1.0)
-		elif treasure_tile_indices.has(i):
-			tile_color = Color(1.0, 0.85, 0.2)
-		elif chance_tile_indices.has(i):
-			tile_color= Color(0.7,0.6,0.9)
 		elif all_branch_indices.has(i):
 			tile_color = Color(0.35, 0.55, 0.75)
+		elif branch_roots.has(i):
+			tile_color = Color(0.35, 0.55, 0.75)
+
+		if red_tile_indices.has(i):
+			texture = red_tile_texture
+		elif shop_tile_indices.has(i):
+			texture = shop_tile_texture
+		elif chance_tile_indices.has(i):
+			texture = chance_tile_texture
+		elif branch_roots.has(i):
+			texture = branch_tile_texture
+
 		draw_rect(rect, tile_color, true)
+
+		if texture != null:
+			_draw_texture_tile(texture, rect)
+
 		draw_rect(rect, Color.WHITE, false, 2.0)

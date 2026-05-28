@@ -29,6 +29,7 @@ position = Vector2(900, 450)
 scale = Vector2(0.08, 0.08)
 texture = ExtResource("2")
 script = ExtResource("6")
+move_speed = 250.0
 next_scene_path = "res://Scenes/Minigames/AsteroidTargeting/AsteroidTargeting3.tscn"
 is_success_object = true
 

@@ -20,31 +20,31 @@ var board_dialog := [
 		"context": ""
 	},
 	{
-		"text": "Your goal is to collect every ship part needed to finish your spacecraft. When you have all seven ship parts, the game will end and go to credits.",
+		"text": "Your goal is to complete quests as you travel between different NASA buildings. Each building represents a new stop where your crew can take on mission work.",
 		"bg": "",
 		"tutorialchar": "res://Sources/Images/SpacemanCharacter1.png",
-		"context": "res://Sources/Images/boardexample.png"
+		"context": ""
 	},
 	{
-		"text": "There is also a turn limit. After 15 full trips around the board, the game will end and go to credits even if your ship is not complete yet.",
+		"text": "The game is not about finishing a set number of stages or collecting every item. Keep moving forward by finishing quests and visiting the NASA buildings on your route.",
 		"bg": "",
 		"tutorialchar": "res://Sources/Images/SpacemanCharacter1.png",
-		"context": "res://Sources/Images/boardexample.png"
+		"context": ""
 	},
 	{
-		"text": "Press Space or click the Roll button on your turn to move. Landing on different tiles can give you money, open shops, or trigger minigames.",
+		"text": "Press Space or click the Roll button on your turn to move. The spaces you land on can guide you toward quests, rewards, shops, or minigames.",
 		"bg": "",
 		"tutorialchar": "res://Sources/Images/SpacemanCharacter1.png",
-		"context": "res://Sources/Images/boardexample.png"
+		"context": ""
 	},
 	{
-		"text": "Red minigame tiles can launch a challenge. Winning minigames can earn you ship parts and other useful rewards.",
+		"text": "Minigame tiles can launch a challenge. Winning minigames can help your crew earn rewards that make future quests easier.",
 		"bg": "",
 		"tutorialchar": "res://Sources/Images/SpacemanCharacter1.png",
-		"context": "res://Sources/Images/boardexample.png"
+		"context": ""
 	},
 	{
-		"text": "Shops let you spend money on parts and helpers. Keep collecting ship parts from shops and minigame rewards until your spacecraft is complete.",
+		"text": "Shops let you spend money on useful items and helpers. Pick what supports your current quests and helps your crew reach the next NASA building.",
 		"bg": "",
 		"tutorialchar": "res://Sources/Images/SpacemanCharacter1.png",
 		"context": ""
@@ -56,7 +56,7 @@ var board_dialog := [
 		"context": ""
 	},
 	{
-		"text": "Good luck. Build the full ship before 15 laps are up and complete your mission.",
+		"text": "Good luck. Complete quests, move through the NASA buildings, and keep your mission team advancing.",
 		"bg": "",
 		"tutorialchar": "res://Sources/Images/SpacemanCharacter1.png",
 		"context": ""
@@ -170,7 +170,6 @@ func _show_dialog_entry(index: int) -> void:
 	_set_tex(tutorialchar, entry.get("tutorialchar", ""), "Char")
 	_set_tex(contextimg, entry.get("context", ""), "Context")
 
-# Add this helper to walk up the tree and find what's invisible
 func _check_visibility_chain(node: Node) -> String:
 	var result := ""
 	var current: Node = node

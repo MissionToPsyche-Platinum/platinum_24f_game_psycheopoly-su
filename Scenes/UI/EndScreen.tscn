@@ -1,0 +1,46 @@
+[gd_scene format=3 uid="uid://ckvdv11234bpm"]
+
+[ext_resource type="Script" uid="uid://ckb2w5euwccxl" path="res://Scenes/UI/end_screen.gd" id="1_ntrla"]
+[ext_resource type="Texture2D" uid="uid://dh1lxoawqexr1" path="res://Sources/Images/SpaceBackgroundPlain.jpeg" id="2_nkvky"]
+
+[node name="Node2D" type="Control" unique_id=1784410113]
+layout_mode = 3
+anchors_preset = 0
+script = ExtResource("1_ntrla")
+
+[node name="Space" type="TextureRect" parent="." unique_id=1635277202]
+layout_mode = 0
+offset_right = 1920.0
+offset_bottom = 1080.0
+texture = ExtResource("2_nkvky")
+
+[node name="CenterContainer" type="CenterContainer" parent="." unique_id=1797628034]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CenterContainer" unique_id=1449281277]
+layout_mode = 2
+
+[node name="title_label" type="Label" parent="CenterContainer/VBoxContainer" unique_id=75257950]
+layout_mode = 2
+
+[node name="subtitle_label" type="Label" parent="CenterContainer/VBoxContainer" unique_id=1872134887]
+layout_mode = 2
+
+[node name="QuestList" type="VBoxContainer" parent="CenterContainer/VBoxContainer" unique_id=2024232925]
+layout_mode = 2
+
+[node name="CornerButtons" type="Control" parent="." unique_id=1890180583]
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="HBoxContainer" type="HBoxContainer" parent="CornerButtons" unique_id=1335831079]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="CreditsBtn" type="Button" parent="CornerButtons/HBoxContainer" unique_id=1270287461]
+layout_mode = 2
+text = "Credits"
